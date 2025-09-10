@@ -1,0 +1,49 @@
+target-version = "py311"
+line-length = 120
+
+[lint]
+select = ["ALL"]
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    "env",
+    "dist",
+    "build",
+    "docs",
+]
+
+ignore = [
+    "A003", # Python builtin is shadowed by class attribute {name} from {row}
+    "B008", # Do not perform function call {name} in argument defaults
+    "B024", # Class is an abstract base class, but it has no abstract methods
+    "D100", # Missing docstring in public module
+    "D101", # Missing docstring in public class
+    "D102", # Missing docstring in public method
+    "D103", # Missing docstring in public function
+    "D104", # Missing docstring in public package
+    "D105", # Missing docstring in magic method
+    "D106", # Missing docstring in public nested class
+    "D107", # Missing docstring in `__init__`
+    "N999", # Invalid module name
+    "S101", # Use of `assert` detected
+    "S311", # Standard pseudo-random generators are not suitable for cryptographic purposes
+    "ANN101", # Missing type annotation for `self` in method
+    "ANN102", # Missing type annotation for `cls` in classmethod
+    "ANN204", # Missing return type annotation for special method `__init__`,
+    "ANN401", # Dynamically typed expressions (typing.Any) are disallowed in `*args` and `**kwargs`
+    "FBT001", # Boolean-typed positional argument in function definition
+    "RUF013", # PEP 484 prohibits implicit `Optional`
+]
+
+[lint.isort]
+combine-as-imports = true
+
+[lint.mccabe]
+max-complexity = 12
+
+[lint.pydocstyle]
+convention = "pep257"
+
+[lint.per-file-ignores]
+"**/__init__.py" = ["F401"]

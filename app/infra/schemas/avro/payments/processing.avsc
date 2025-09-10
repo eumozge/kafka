@@ -1,0 +1,58 @@
+{
+   "type":"record",
+   "name":"PaymentProcessing",
+   "namespace":"com.events.integration",
+   "doc":"Event representing a payment processing operation",
+   "fields":[
+      {
+         "name":"metadata",
+         "type":{
+            "type":"record",
+            "name":"Metadata",
+            "fields":[
+               {
+                  "name":"id",
+                  "type":"string",
+                  "doc":"Unique event identifier (UUID)"
+               },
+               {
+                  "name":"version",
+                  "type":"string",
+                  "doc":"Event schema version identifier"
+               }
+            ]
+         },
+         "doc":"Event metadata and schema versioning information"
+      },
+      {
+         "name":"payload",
+         "type":{
+            "type":"record",
+            "name":"Payload",
+            "fields":[
+               {
+                  "name":"username",
+                  "type":"string",
+                  "doc":"User identifier associated with the payment"
+               },
+               {
+                  "name":"action",
+                  "type":"string",
+                  "doc":"User identifier associated with the payment"
+               },
+               {
+                  "name":"amount",
+                  "type":"string",
+                  "doc":"Transaction amount in major currency units"
+               },
+               {
+                  "name":"timestamp",
+                  "type":"string",
+                  "doc":"Event creation timestamp in ISO 8601 format"
+               }
+            ]
+         },
+         "doc":"Event payload"
+      }
+   ]
+}
