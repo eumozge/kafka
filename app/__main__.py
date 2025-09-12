@@ -1,6 +1,14 @@
-import asyncio
+import click
+from infra.consumers.commands import consumers
+from infra.producers.commands import producers
 
-from commands import cli
+
+@click.group()
+def cli() -> None:
+    pass
+
 
 if __name__ == "__main__":
-    asyncio.run(cli())
+    cli.add_command(producers)
+    cli.add_command(consumers)
+    cli()

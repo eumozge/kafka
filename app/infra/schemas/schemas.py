@@ -22,6 +22,5 @@ def load_schemas(schema_register: SchemaRegistryClient) -> None:
             schema_register.register_schema(schema=schema, subject_name=subject_name)
 
     schemas = schema_register.get_subjects()
-    message = f"Available schemas: {schemas}"
-    logger.info(message)
+    logger.info("Available schemas: %s", schemas)
     logger.info("Schemas are loaded.")

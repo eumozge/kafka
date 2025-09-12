@@ -1,8 +1,8 @@
 {
    "type":"record",
-   "name":"PaymentProcessing",
+   "name":"PaymentTransaction",
    "namespace":"com.events.integration",
-   "doc":"Event representing a payment processing operation",
+   "doc":"Event representing a payment Transaction operation",
    "fields":[
       {
          "name":"metadata",
@@ -16,9 +16,14 @@
                   "doc":"Unique event identifier (UUID)"
                },
                {
+                  "name":"schema",
+                  "type":"string",
+                  "doc":"Event schema name"
+               },
+               {
                   "name":"version",
                   "type":"string",
-                  "doc":"Event schema version identifier"
+                  "doc":"Event schema version"
                }
             ]
          },

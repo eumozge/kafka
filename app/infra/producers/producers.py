@@ -4,42 +4,36 @@ from contextlib import contextmanager
 from typing import Self
 
 from confluent_kafka import KafkaError, Message, Producer as KafkaProducer
-from infra.producers.events import IntegrationEvent
 from infra.producers.settings import ProducerSettings
-from infra.schemas.serializers import EventSchemaSerializer
+from infra.topics import Topic
 
 logger = logging.getLogger(__name__)
 
 
 class ProducerWrapper:
-    def __init__(self, producer: KafkaProducer, event_schema_serializer: EventSchemaSerializer) -> None:
+    def __init__(self, producer: KafkaProducer) -> None:
         self.__producer: KafkaProducer = producer
-        self.__event_schema_serializer: EventSchemaSerializer = event_schema_serializer
 
     @property
     def producer(self) -> KafkaProducer:
         return self.__producer
 
-    @property
-    def event_schema_serializer(self) -> EventSchemaSerializer:
-        return self.__event_schema_serializer
-
     @classmethod
-    def get(cls, settings: ProducerSettings, event_schema_serializer: EventSchemaSerializer) -> Self:
+    def get(cls, settings: ProducerSettings) -> Self:
         producer = KafkaProducer(settings.to_representative())
-        message = f"Producer started with id: {settings.client_id}"
-        logger.info(message)
-        return cls(producer, event_schema_serializer=event_schema_serializer)
+        logger.info("Producer started with id: %s", settings.client_id)
+        return cls(producer)
 
     def produce(
         self,
-        intergration_event: IntegrationEvent,
+        topic: Topic,
+        key: str,
+        serialized_value: bytes,
         callback: Callable[[KafkaError, Message | None], None] | None = None,
     ) -> None:
-        serialized_value = self.event_schema_serializer.serialize(intergration_event)
         self.producer.produce(
-            topic=intergration_event.topic,
-            key=intergration_event.key,
+            topic=topic,
+            key=key,
             value=serialized_value,
             callback=callback,
         )
@@ -56,11 +50,8 @@ class ProducerWrapper:
 
 
 @contextmanager
-def get_producer(
-    producer_settings: ProducerSettings,
-    event_schema_serializer: EventSchemaSerializer,
-) -> Generator[ProducerWrapper, None, None]:
-    producer = ProducerWrapper.get(producer_settings, event_schema_serializer)
+def get_producer(producer_settings: ProducerSettings) -> Generator[ProducerWrapper, None, None]:
+    producer = ProducerWrapper.get(producer_settings)
     try:
         yield producer
     finally:

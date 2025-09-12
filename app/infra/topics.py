@@ -1,5 +1,5 @@
-from enum import StrEnum, auto
+from enum import StrEnum
 
 
 class Topic(StrEnum):
-    PAYMENT = auto()
+    PAYMENT_TRANSACTION = "payment-transaction"

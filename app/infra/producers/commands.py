@@ -3,9 +3,9 @@ from time import sleep
 
 import click
 from domain import payments
-from domain.common import registry as event_registry
+from domain.schemas.registries import SchemaSubjectName, registry as event_registry
+from infra.events import EventMetadata, IntegrationEvent
 from infra.producers.callbacks import delivery_logging
-from infra.producers.events import EventMetadata, IntegrationEvent
 from infra.producers.producers import get_producer
 from infra.producers.settings import ProducerSettings
 from infra.schemas.schemas import get_schemas_registry_client, load_schemas
@@ -18,10 +18,10 @@ logger = logging.getLogger(__name__)
 
 
 @click.group()
-def cli() -> None: ...
+def producers() -> None: ...
 
 
-@cli.command()
+@producers.command()
 @click.option(
     "--message-delay",
     "-d",
@@ -55,21 +55,21 @@ def start(message_delay: int, message_count: int, log_throttling: int) -> None:
         event_registry=event_registry,
     )
 
-    with get_producer(
-        producer_settings=ProducerSettings(),
-        event_schema_serializer=event_schema_serializer,
-    ) as producer:
+    with get_producer(producer_settings=ProducerSettings()) as producer:
         try:
             for i in range(message_count):
                 domain_event = payments.get_random_event()
                 integraion_event = IntegrationEvent(
-                    topic=Topic.PAYMENT,
+                    topic=Topic.PAYMENT_TRANSACTION,
                     key=domain_event.username,
-                    metadata=EventMetadata(version="1.0"),
+                    metadata=EventMetadata(version="1.0", schema=SchemaSubjectName.PAYMENT_TRANSACTION),
                     domain_event=domain_event,
                 )
+                serialized_value = event_schema_serializer.serialize(integraion_event)
                 producer.produce(
-                    integraion_event,
+                    topic=integraion_event.topic,
+                    key=integraion_event.key,
+                    serialized_value=serialized_value,
                     callback=lambda error, message, message_numer=i: delivery_logging(
                         error,
                         message,

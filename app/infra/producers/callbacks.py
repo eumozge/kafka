@@ -10,8 +10,6 @@ def delivery_logging(error: KafkaError | None, message: Message, message_number:
         return
 
     if error:
-        message = f"Message `{message_number:>06}` to `{message.topic()}` delivery failed: {error.str()}"
-        logger.error(message)
+        logger.error("Message `%s` to `%s` delivery failed: %", f"{message_number:>06}", message.topic(), error.str())
     else:
-        message = f"Message `{message_number:>06}` to `{message.topic()}` delivery succesed."
-        logger.info(message)
+        logger.info("Message `%s` to `%s` delivery succeed.", f"{message_number:>06}", message.topic())

@@ -1,1 +1,1 @@
-from .events import Event, registry
+from .events import BaseEvent
