@@ -10,9 +10,9 @@ EventRepresentation: TypeAlias = dict
 
 @dataclass(frozen=True)
 class BaseEvent(ABC):
-    def to_representative(self) -> EventRepresentation:
-        return orjson.loads(orjson.dumps(asdict(self), default=default_serializer))
-
     @classmethod
     @abstractmethod
     def from_representation(cls, payload: EventRepresentation) -> Self: ...
+
+    def to_representative(self) -> EventRepresentation:
+        return orjson.loads(orjson.dumps(asdict(self), default=default_serializer))

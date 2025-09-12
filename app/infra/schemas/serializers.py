@@ -39,6 +39,7 @@ class EventSchemaSerializer(metaclass=Singleton):
         return self.cache[schema_subject_name]
 
     def serialize(self, intergration_event: IntegrationEvent) -> bytes:
+        """Replace with serializing to json if it is necessary."""
         serializer = self.get_serializer(intergration_event.domain_event)
         return serializer(
             intergration_event.to_representative(),
@@ -49,12 +50,14 @@ class EventSchemaSerializer(metaclass=Singleton):
         return AvroDeserializer(self.client)
 
     def deserialize(self, message: Message) -> IntegrationEvent:
+        """Replace with deserializing from json if it is necessary."""
         deserializer = self.get_deserializer()
         context = SerializationContext(message.topic(), MessageField.VALUE)
-        value = deserializer(message.value(), context)
-        metadata = EventMetadata.from_representative(payload=value["metadata"])
+        serializer_value = deserializer(message.value(), context)
+
+        metadata = EventMetadata.from_representative(payload=serializer_value["metadata"])
         event_class = self.schema_registry.get_class(metadata.schema)
-        domain_event = event_class.from_representation(payload=value["payload"])
+        domain_event = event_class.from_representation(payload=serializer_value["payload"])
         return IntegrationEvent(
             topic=message.topic(),
             key=message.key().decode("utf-8"),

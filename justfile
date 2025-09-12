@@ -15,7 +15,7 @@ storages-down:
 	docker compose -f {{STORAGES}} {{ENV}} -p {{ PROJECT_NAME }} down
 
 cli *args:
-	just py python3 ./app {{args}}
+	just py python3 app/cli.py {{args}}
 
 producers *args:
 	just cli producers {{args}}

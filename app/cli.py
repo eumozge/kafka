@@ -1,6 +1,6 @@
 import click
-from infra.consumers.commands import consumers
-from infra.producers.commands import producers
+from presentation.cli.consumers import consumers
+from presentation.cli.producers import producers
 
 
 @click.group()

@@ -6,7 +6,7 @@ from domain.schemas.registries import registry as event_registry
 from infra.consumers.consumers import get_consumer
 from infra.consumers.settings import ConsumerSettings
 from infra.schemas.schemas import get_schemas_registry_client, load_schemas
-from infra.schemas.serializers import get_event_schema_serializer
+from infra.schemas.serializers import get_avro_event_schema_serializer
 from infra.schemas.settings import SchemaRegisterSettings
 from infra.topics import Topic
 
@@ -47,7 +47,7 @@ def start(message_delay: int, group: str, log_throttling: int) -> None:
     logger.info("Start counsumers in 3 secods.")
     sleep(3)
 
-    event_schema_serializer = get_event_schema_serializer(
+    event_schema_serializer = get_avro_event_schema_serializer(
         schema_registry=schema_registry,
         event_registry=event_registry,
     )
