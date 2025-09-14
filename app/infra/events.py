@@ -41,4 +41,4 @@ class IntegrationEvent(ABC):
         }
 
     def encode(self) -> bytes:
-        return orjson.dumps(self, default=default_serializer)
+        return orjson.dumps(self.to_representative(), default=default_serializer)

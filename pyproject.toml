@@ -1,10 +1,11 @@
 [project]
-name = "study"
+name = "kafka-study"
 version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
     "click>=8.2.1",
     "confluent-kafka[avro]>=2.11.1",
+    "faststream>=0.5.48",
     "orjson>=3.11.3",
     "pydantic-settings>=2.10.1",
 ]

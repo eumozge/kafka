@@ -1,6 +1,6 @@
 # Kafka Study Project
 
-A simple study project demonstrating Kafka producers and consumers in Python with Avro and Schema Registry. It does not implement patterns such as inbox, outbox or external offset storage. Not using native AvroProducers/AvroConsumers for educational purposes only.
+A simple study project demonstrating Kafka producers and consumers in Python with Avro and Schema Registry.
 
 ## Quick start
 1. Install deps:
@@ -15,12 +15,12 @@ just storages
 
 3. Run a producer, for example produce 100 messages with 100ms delay between messages:
 ```bash
-just producers start --message-count 100 --message-delay 100
+just producers start --message-count 100 --message-delay 100 --serializer json
 ```
 
 4. Run a consumer (in another terminal), for example consume with group "default":
 ```bash
-just consumers start --group default --message-delay 100
+just consumers start --group default --message-delay 100 --serializer json
 ```
 
 5. Stop the stack:
@@ -36,3 +36,9 @@ Create `.env` from `.env.example` in the project root (used by Docker compose an
 - Producer generates random events and publishes to Kafka.
 - Avro schemas are auto-registered on startup from via Schema Registry.
 - Consumer subscribes to the topic, deserializes events via the registered schema.
+
+
+## Design notes
+- It does not implement patterns such as inbox, outbox or external offset storage.
+- Event serializers can be chosen from Avro or JSON. The consumer lacks error handling for messages in the wrong format, so the topic must be cleaned if the format is changed.
+- Using default Producer/Consumer for educational purposes.

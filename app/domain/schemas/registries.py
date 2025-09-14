@@ -11,7 +11,7 @@ class SchemaSubjectName(StrEnum):
 
 
 @dataclass
-class SchemaRegistry(metaclass=Singleton):
+class SchemaRegistry(Singleton):
     __schemas: dict[type[BaseEvent], SchemaSubjectName] = field(default_factory=dict)
 
     @property

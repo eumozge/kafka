@@ -9,7 +9,7 @@ from infra.producers.callbacks import delivery_logging
 from infra.producers.producers import get_producer
 from infra.producers.settings import ProducerSettings
 from infra.schemas.schemas import get_schemas_registry_client, load_schemas
-from infra.schemas.serializers import get_event_schema_serializer
+from infra.schemas.serializers import EventSerializerType, get_event_serializer
 from infra.schemas.settings import SchemaRegisterSettings
 from infra.topics import Topic
 
@@ -37,23 +37,32 @@ def producers() -> None: ...
     help="Total producing messages.",
 )
 @click.option(
+    "--serializer",
+    "-s",
+    type=click.Choice([str(val) for val in EventSerializerType]),
+    default=str(EventSerializerType.JSON),
+    help="Type of evetn serializer",
+)
+@click.option(
     "--log-throttling",
     "-lt",
     type=click.INT,
     default=1,
     help="Throttling for message callback logs.",
 )
-def start(message_delay: int, message_count: int, log_throttling: int) -> None:
+def start(message_delay: int, message_count: int, serializer: EventSerializerType, log_throttling: int) -> None:
     logger.info("Starting producers...")
     schema_registry = get_schemas_registry_client(settings=SchemaRegisterSettings())
     load_schemas(schema_registry)
+
+    event_schema_serializer = get_event_serializer(
+        event_serializer_type=EventSerializerType(serializer),
+        schema_registry_client=schema_registry,
+        schema_registry=event_registry,
+    )
+
     logger.info("Start producers in 3 secods.")
     sleep(3)
-
-    event_schema_serializer = get_event_schema_serializer(
-        schema_registry=schema_registry,
-        event_registry=event_registry,
-    )
 
     with get_producer(producer_settings=ProducerSettings()) as producer:
         try:
@@ -65,7 +74,7 @@ def start(message_delay: int, message_count: int, log_throttling: int) -> None:
                     metadata=EventMetadata(version="1.0", schema=SchemaSubjectName.PAYMENT_TRANSACTION),
                     domain_event=domain_event,
                 )
-                serialized_value = event_schema_serializer.serialize(integration_event)
+                serialized_value = event_schema_serializer.to_bytes(integration_event)
                 producer.produce(
                     topic=integration_event.topic,
                     key=integration_event.key,
